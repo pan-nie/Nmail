@@ -11,9 +11,9 @@
 多账号聚合到一个收件箱；AI 替你分类、归档、拟好回信、每天汇报。<br>
 你看、你改、你拍板——**数据一步也不离开你的电脑**。
 
-[![Release](https://img.shields.io/github/v/release/nathanpenny520/Nmail)](../../releases)
+[![Release](https://img.shields.io/github/v/release/pan-nie/Nmail)](../../releases)
 [![PyPI](https://img.shields.io/pypi/v/nmail-app)](https://pypi.org/project/nmail-app/)
-[![License](https://img.shields.io/github/license/nathanpenny520/Nmail)](LICENSE)
+[![License](https://img.shields.io/github/license/pan-nie/Nmail)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows_%7C_macOS_%7C_Linux-lightgrey)
 
 <img src="assets/Nmail-demo.gif" alt="Nmail 操作演示：多账号收件箱、AI 总管家对话执行、审批与整理" width="880">

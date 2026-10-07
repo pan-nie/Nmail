@@ -7,10 +7,10 @@
 
 | 项 | 状态 |
 |---|---|
-| gh CLI 已登录 nathanpenny520 | ✅（git-bash 下位于 `/c/Program Files/GitHub CLI/gh.exe`，脚本自动定位） |
+| gh CLI 已登录 pan-nie | ✅（git-bash 下位于 `/c/Program Files/GitHub CLI/gh.exe`，脚本自动定位） |
 | 仓库 Secret `PYPI_API_TOKEN` | ✅ user-scoped（Entire account，新项目名首传不 403） |
-| 仓库 Secret `HOMEBREW_TAP_TOKEN` | ✅ fine-grained，可写 `nathanpenny520/homebrew-nmail` Contents |
-| winget-pkgs fork | ✅ `nathanpenny520/winget-pkgs`（**默认分支是 master，不是 main**） |
+| 仓库 Secret `HOMEBREW_TAP_TOKEN` | ✅ fine-grained，可写 `pan-nie/homebrew-nmail` Contents |
+| winget-pkgs fork | ✅ `pan-nie/winget-pkgs`（**默认分支是 master，不是 main**） |
 | Microsoft CLA | ✅ 已签（长期有效） |
 
 ## 一条命令发版
@@ -28,7 +28,7 @@ bash scripts/release.sh 0.2.0 --dry-run      # 演练：只验证预检与版本
 3. **提交 `release: vX.Y.Z` → 打 tag → 推送**
 4. **盯 CI**（release.yml）：前端构建 → wheel 发 PyPI；三平台 PyInstaller 单文件挂 GitHub Release；Homebrew tap 自动同步新版本与 SHA256
 5. **winget 版本 PR**：等 Release 资产 → 取 exe SHA256 → fork 建分支写三份 manifest → 提 PR 到 `microsoft/winget-pkgs`
-6. **官网联动**：`gh workflow run deploy.yml -R nathanpenny520/nmail-site` 触发官网重建（构建期拉 Releases + 主仓 docs），1–2 分钟后 nmail.whizzzest.com 同步新版；失败不阻塞发版，可手动补触发
+6. **官网联动**：`gh workflow run deploy.yml -R pan-nie/nmail-site` 触发官网重建（构建期拉 Releases + 主仓 docs），1–2 分钟后 nmail.whizzzest.com 同步新版；失败不阻塞发版，可手动补触发
 
 ## 脚本跑完后的 AI 收尾清单（CLAUDE.md 规范 2/8）
 
@@ -47,29 +47,29 @@ bash scripts/release.sh 0.2.0 --dry-run      # 演练：只验证预检与版本
 | 症状 | 处理 |
 |---|---|
 | push 被拒（并行会话刚推了提交） | `git pull --rebase origin main` → `git tag -d vX.Y.Z` → 重跑脚本 |
-| PyPI 403 Forbidden | token 过期/换 scope → pypi.org 重建 user-scoped token → `printf '%s' 'token' | gh secret set PYPI_API_TOKEN --repo nathanpenny520/Nmail` → Actions 页 Re-run failed jobs |
+| PyPI 403 Forbidden | token 过期/换 scope → pypi.org 重建 user-scoped token → `printf '%s' 'token' | gh secret set PYPI_API_TOKEN --repo pan-nie/Nmail` → Actions 页 Re-run failed jobs |
 | PyPI "file already exists" | **版本号已被永久占用**（上传成功过哪怕部分失败）→ 只能 bump 新版本号，不能复用 |
 | tag 推错了想重来 | 仅当该版本**从未成功上传 PyPI** 时可重指：`git push origin :refs/tags/vX && git tag -d vX` → 改完重新打 tag 推送 |
 | 「附加到 GitHub Release」步骤报 `##[error]<!DOCTYPE html>`（softprops 收到 HTML 错误页） | GitHub 瞬时故障，产物构建本身已成功：`gh run rerun <run_id> --failed` 重跑失败腿即可，勿整跑重发 |
-| homebrew-tap 的 cask 步骤 `sed: can't read scripts/cask_template.rb` | 该 job 原设计无 checkout（v0.4.3 实测必挂，db4ee8b 已补 checkout 但**旧 tag 的重跑仍用旧 workflow**）；兜底=本地渲染模板经 `gh api -X PUT repos/nathanpenny520/homebrew-nmail/contents/Casks/nmail.rb` 创建（模板在 scripts/cask_template.rb，dmg SHA256 用 `curl -fsSL <dmg-url> \| sha256sum`） |
+| homebrew-tap 的 cask 步骤 `sed: can't read scripts/cask_template.rb` | 该 job 原设计无 checkout（v0.4.3 实测必挂，db4ee8b 已补 checkout 但**旧 tag 的重跑仍用旧 workflow**）；兜底=本地渲染模板经 `gh api -X PUT repos/pan-nie/homebrew-nmail/contents/Casks/nmail.rb` 创建（模板在 scripts/cask_template.rb，dmg SHA256 用 `curl -fsSL <dmg-url> \| sha256sum`） |
 | fork merge-upstream 422（workflow scope） | 上游 winget-pkgs 改了 workflow 文件、gh token 缺 `workflow` scope，与 v0.4.2 同：容忍跳过（PR 基点沿用 fork master 旧提交），fork 对象库不含上游未同步提交、勿试图直接以上游 sha 建分支（404） |
-| CI 某平台失败 | `gh run view <run_id> --repo nathanpenny520/Nmail --log-failed`；homebrew-tap job 失败先查 `HOMEBREW_TAP_TOKEN` 是否过期 |
+| CI 某平台失败 | `gh run view <run_id> --repo pan-nie/Nmail --log-failed`；homebrew-tap job 失败先查 `HOMEBREW_TAP_TOKEN` 是否过期 |
 | homebrew-tap 404 | 历史坑：曾因①只等 python-package 就开跑（macOS 资产还没挂上，下载 404）②curl 误用 gh 的 `--jq` 参数——均已修复（needs 含 binaries；指纹解析改 python3）。tap 更新失败时可用 gh 手动改 formula 兜底（见 RELEASE.md 作者会话记录） |
 
 ### 发行验证清单（发完必查）
 ```bash
-gh run view <run_id> --repo nathanpenny520/Nmail      # ① CI 全绿
+gh run view <run_id> --repo pan-nie/Nmail      # ① CI 全绿
 curl -s https://pypi.org/pypi/nmail-app/json | grep -o '"version":"[^"]*"' | head -1   # ② PyPI 版本
-gh release view vX.Y.Z --repo nathanpenny520/Nmail    # ③ 三平台资产挂齐
-gh api repos/nathanpenny520/homebrew-nmail/contents/Formula/nmail.rb --jq '.content' \
+gh release view vX.Y.Z --repo pan-nie/Nmail    # ③ 三平台资产挂齐
+gh api repos/pan-nie/homebrew-nmail/contents/Formula/nmail.rb --jq '.content' \
   | base64 -d | grep "^version"                       # ④ tap 版本
-winget search nathanpenny520.Nmail                    # ⑤ 合并后可见（PR 合并前 winget search 查不到）
+winget search pan-nie.Nmail                    # ⑤ 合并后可见（PR 合并前 winget search 查不到）
 ```
 
 ### winget 专属坑（全部真实踩过）
 
-1. **目录必须单层首字母折叠**：`manifests/n/nathanpenny520/Nmail/<版本>/`——写成 `n/na/` 两层会报 "path must match PackageIdentifier"
-2. **locale 文件名必须带语言后缀**：`nathanpenny520.Nmail.locale.en-US.yaml`——省略后缀会报 "filename must match ... ManifestType"
+1. **目录必须单层首字母折叠**：`manifests/n/pan-nie/Nmail/<版本>/`——写成 `n/na/` 两层会报 "path must match PackageIdentifier"
+2. **locale 文件名必须带语言后缀**：`pan-nie.Nmail.locale.en-US.yaml`——省略后缀会报 "filename must match ... ManifestType"
 3. **本地 `winget validate` 验不出上面两条**（它不查文件名/路径与标识符匹配），别因为本地绿就放心
 4. `winget validate <目录>` 的目录里**不能有子目录**（哪怕 `cache/`），否则报 "Subdirectory not supported"
 5. fork 的默认分支是 **master**；脚本已自动 `merge-upstream` 同步
@@ -98,6 +98,6 @@ release CI 新增 `nmail-cli-package` job：构建 `nmail-cli/` 并发布到 PyP
 | PyPI | CI 即时 | `uv tool upgrade nmail-app` / `pip install -U nmail-app` |
 | PyPI（nmail-cli） | CI 即时 | `uvx nmail-cli@latest` / `uv tool upgrade nmail-cli` |
 | GitHub Release | CI 即时 | 下载覆盖 |
-| Homebrew | CI 即时（tap 自动 bump） | `brew upgrade nathanpenny520/nmail/nmail` |
-| winget | 版本 PR 合并后 | `winget upgrade nathanpenny520.Nmail` |
+| Homebrew | CI 即时（tap 自动 bump） | `brew upgrade pan-nie/nmail/nmail` |
+| winget | 版本 PR 合并后 | `winget upgrade pan-nie.Nmail` |
 | 应用内提醒 | CI 即时（对比 GitHub Releases 最新 tag） | 通知中心 → 点 Releases 链接 |

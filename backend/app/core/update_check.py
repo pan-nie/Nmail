@@ -15,8 +15,8 @@ import httpx
 from app.config import APP_VERSION
 from app.db.database import get_conn, get_setting, set_setting
 
-RELEASES_API = "https://api.github.com/repos/nathanpenny520/Nmail/releases/latest"
-RELEASES_PAGE = "https://github.com/nathanpenny520/Nmail/releases/latest"
+RELEASES_API = "https://api.github.com/repos/pan-nie/Nmail/releases/latest"
+RELEASES_PAGE = "https://github.com/pan-nie/Nmail/releases/latest"
 CHECK_INTERVAL_HOURS = 24
 _STATE_KEY = "update_check_state"
 _HTTP_TIMEOUT = httpx.Timeout(8.0, connect=4.0)

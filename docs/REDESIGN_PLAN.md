@@ -832,7 +832,7 @@ A（当天量级）→ C（记忆，体感最大）→ D（主动式）→ B（�
 
 ### 19.1 三层架构与阶段
 
-外部 Agent → SKILL.md（P3，仓根 `skills/`，`npx skills add nathanpenny520/Nmail -g` 安装）→
+外部 Agent → SKILL.md（P3，仓根 `skills/`，`npx skills add pan-nie/Nmail -g` 安装）→
 `nmail-cli`（P2，PyPI + `uvx nmail-cli` 零安装，JSON envelope + exit code 契约 + CLI 层两阶段
 确认）→ `/api/ext/v1/*`（P1 补全）→ 本机进程（127.0.0.1 或自建隧道）。**不做 MCP**（远期顺位不变）。
 
@@ -866,7 +866,7 @@ A（当天量级）→ C（记忆，体感最大）→ D（主动式）→ B（�
   配置 `~/.config/nmail-cli/config.json`（0600）+ `NMAIL_BASE_URL/NMAIL_API_KEY` 环境变量。
   为其新增 ext 端点 `GET /drafts/{id}`（单条草稿，CLI 发送摘要用）。验证：pytest 9 契约用例
   （ASGI 传输打真实 app）+ 隔离实例真实子进程 e2e（配对/权限门禁/reply/两阶段/到达 outbox）。
-- **P3 SKILL.md ✅（2026-09-15）**：仓根 `skills/SKILL.md`（`npx skills add nathanpenny520/Nmail
+- **P3 SKILL.md ✅（2026-09-15）**：仓根 `skills/SKILL.md`（`npx skills add pan-nie/Nmail
   -g` 可装）——安装配置/命令清单/两阶段唯一规则/exit code 表/邮件内容不可信六条/正文规范/示例/
   排错。本机 Claude Code 已装并实测一轮（真实实例：配对/只读链路/回复草稿/两阶段 exit 8/watch；
   测试 Key 收敛为一把 read，多余已吊销）；官网 /docs/agent/ 上线（主仓 docs/Agent接入指南.md

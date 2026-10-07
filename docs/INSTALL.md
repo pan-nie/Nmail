@@ -6,9 +6,9 @@ Nmail 是本地优先的单机应用：任何安装方式都只在本机跑一�
 
 | 方式 | 适合 | 平台 | 命令 |
 |---|---|---|---|
-| ① 单文件可执行 | 大多数用户（推荐） | Win / macOS / Linux | 到 [Releases](https://github.com/nathanpenny520/Nmail/releases) 下载，双击运行 |
-| ② winget | Windows 想要免维护升级 | Windows | `winget install nathanpenny520.Nmail` |
-| ③ Homebrew | macOS (Apple Silicon) | macOS | `brew tap nathanpenny520/nmail https://github.com/nathanpenny520/homebrew-nmail && brew trust nathanpenny520/nmail && brew install nathanpenny520/nmail/nmail` |
+| ① 单文件可执行 | 大多数用户（推荐） | Win / macOS / Linux | 到 [Releases](https://github.com/pan-nie/Nmail/releases) 下载，双击运行 |
+| ② winget | Windows 想要免维护升级 | Windows | `winget install pan-nie.Nmail` |
+| ③ Homebrew | macOS (Apple Silicon) | macOS | `brew tap pan-nie/nmail https://github.com/pan-nie/homebrew-nmail && brew trust pan-nie/nmail && brew install pan-nie/nmail/nmail` |
 | ④ uvx / pip | 命令行熟手，不想手动换文件 | 全平台 | `uvx --from nmail-app nmail` |
 | ⑤ 源码开发 | 开发者 | 全平台 | 见 [README 开发章节](../README.md) |
 
@@ -18,7 +18,7 @@ Nmail 是本地优先的单机应用：任何安装方式都只在本机跑一�
 
 ### ① 单文件可执行
 
-到 [Releases](https://github.com/nathanpenny520/Nmail/releases) 下载对应文件并**双击运行**：
+到 [Releases](https://github.com/pan-nie/Nmail/releases) 下载对应文件并**双击运行**：
 
 | 文件 | 平台 |
 |---|---|
@@ -26,7 +26,7 @@ Nmail 是本地优先的单机应用：任何安装方式都只在本机跑一�
 | `nmail-macos-arm64` | macOS (Apple Silicon) |
 | `nmail-linux-x64` | Linux x64 |
 
-**macOS 更推荐 [Nmail.app 压缩包](https://github.com/nathanpenny520/Nmail/releases/latest/download/nmail-macos-arm64.app.zip)**（v0.4.2 起）：解压，把 Nmail.app 拖进「应用程序」即装——Dock 图标、⌘Q 退出。首次打开需右键 → 打开（未公证）。
+**macOS 更推荐 [Nmail.app 压缩包](https://github.com/pan-nie/Nmail/releases/latest/download/nmail-macos-arm64.app.zip)**（v0.4.2 起）：解压，把 Nmail.app 拖进「应用程序」即装——Dock 图标、⌘Q 退出。首次打开需右键 → 打开（未公证）。
 
 - **运行后会发生什么**：不弹任何命令行黑窗（Windows 双击即纯后台运行），几秒后浏览器自动打开 `http://127.0.0.1:8720`。端口被占用会自动顺延，以浏览器实际打开的地址为准。
 - **退出**：设置-关于 →「退出 Nmail」（macOS .app 可 ⌘Q；终端直跑二进制时 Ctrl+C）。关闭浏览器标签不退出——后台同步与每日摘要在服务常驻期间照常工作。
@@ -38,17 +38,17 @@ Nmail 是本地优先的单机应用：任何安装方式都只在本机跑一�
 ### ② winget（Windows）
 
 ```powershell
-winget install nathanpenny520.Nmail   # 安装（manifest 审核中：microsoft/winget-pkgs#432990）
-winget upgrade nathanpenny520.Nmail   # 升级
-winget uninstall nathanpenny520.Nmail # 卸载
+winget install pan-nie.Nmail   # 安装（manifest 审核中：microsoft/winget-pkgs#432990）
+winget upgrade pan-nie.Nmail   # 升级
+winget uninstall pan-nie.Nmail # 卸载
 ```
 
 ### ③ Homebrew（macOS Apple Silicon）
 
 ```bash
-brew tap nathanpenny520/nmail https://github.com/nathanpenny520/homebrew-nmail
-brew trust nathanpenny520/nmail            # Homebrew 7 起第三方 tap 须显式信任
-brew install nathanpenny520/nmail/nmail    # 升级: brew upgrade nathanpenny520/nmail/nmail；卸载: brew uninstall nathanpenny520/nmail/nmail
+brew tap pan-nie/nmail https://github.com/pan-nie/homebrew-nmail
+brew trust pan-nie/nmail            # Homebrew 7 起第三方 tap 须显式信任
+brew install pan-nie/nmail/nmail    # 升级: brew upgrade pan-nie/nmail/nmail；卸载: brew uninstall pan-nie/nmail/nmail
 ```
 
 > **必须用全名**：core 仓库已有同名无关软件，裸 `brew install nmail` 装到的是它。**`brew trust` 为 Homebrew 7 起必需**；未信任时 `brew tap` 报「invalid syntax」并删克隆，实为信任问题。
@@ -86,7 +86,7 @@ pip install nmail-app                # 升级: pip install -U nmail-app；卸载
 - **应用内更新**（v0.4.2 起，默认开启可关）：单文件版与 pip 安装在发现新版本后自动在后台下载并就位，提示「重启即更新，下次打开自动生效」，设置-关于 可一键重启或关掉自动安装；Homebrew/winget/uvx 由包管理器管理，应用内会给出对应升级命令。
 - **桌面图标**（设置-关于 一键安装；uvx 用户也可一条命令：`uvx --from nmail-app nmail install-shortcut`）：Windows 在桌面+开始菜单创建快捷方式，macOS 在「应用程序」生成 Nmail.app，Linux 创建 .desktop 启动器——双击即用、全程无终端窗口；再点一次图标就再开一个标签页。uvx 渠道的图标直接指向 uvx 命令：**每次双击自动用最新版**，升级、`uv cache prune` 都不会弄坏图标。首次打开应用会有一次「安装桌面图标」引导横幅，弹出一次、错过不再骚扰（设置-关于随时可装）。
 - **空闲自动退出**（v0.4.5 起，默认开、设置-关于 可关）：从图标打开的 Nmail，在标签页全部关闭约一分半后自动退出（终端运行 `nmail` 不受影响，Ctrl+C 退出）。关闭前未完成的同步会在下次启动自动续上。
-- **升级命令**：`winget upgrade nathanpenny520.Nmail` ｜ `brew upgrade nathanpenny520/nmail/nmail` ｜ `uv tool upgrade nmail-app` ｜ uvx：双击桌面图标即最新版；终端运行 `uvx --from nmail-app nmail` 实测也紧跟新发布，若个别情况下未跟上用 `uvx --refresh --from nmail-app nmail` 强制刷新 ｜ 单文件：下载新版覆盖旧文件（或直接用应用内更新）。
+- **升级命令**：`winget upgrade pan-nie.Nmail` ｜ `brew upgrade pan-nie/nmail/nmail` ｜ `uv tool upgrade nmail-app` ｜ uvx：双击桌面图标即最新版；终端运行 `uvx --from nmail-app nmail` 实测也紧跟新发布，若个别情况下未跟上用 `uvx --refresh --from nmail-app nmail` 强制刷新 ｜ 单文件：下载新版覆盖旧文件（或直接用应用内更新）。
 - **升级不丢数据**：邮件库、密钥、配置在独立数据目录（见下），新版本首次启动自动执行数据库迁移。
 
 ## 数据位置、备份与卸载

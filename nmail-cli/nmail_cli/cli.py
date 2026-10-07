@@ -108,7 +108,7 @@ def _probe_update_notice() -> None:
                 "update": {"cli": nmail_cli.__version__, "server": server,
                            "hint": "CLI 落后于服务端，建议升级后重新安装 skill",
                            "upgrade": "uvx nmail-cli@latest",
-                           "skill": "npx skills add nathanpenny520/Nmail -g -y"},
+                           "skill": "npx skills add pan-nie/Nmail -g -y"},
             }
     except Exception:  # noqa: BLE001 — 更新检查失败不影响命令本身
         return

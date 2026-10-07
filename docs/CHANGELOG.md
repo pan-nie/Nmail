@@ -342,7 +342,7 @@
 - 会话：S-0916-1258-收尾计划
 
 ## daf08f6 — docs: 收官阶段定稿（docs/WIND_DOWN_PLAN.md）
-- 用户拍板六项决策：①Homebrew 只做自家 tap cask（`brew install --cask nathanpenny520/nmail/nmail`），不提交官方 homebrew-cask ②macOS dmg 首选、`.app.zip` 保留，官网/Release 默认下载即 App ③Intel macOS 放弃（仅 Apple Silicon）④不迁 Tauri（无 Electron 前提：Python 后端 + 浏览器 GUI）⑤Linux 维持单文件不做 AppImage/deb ⑥Windows 不上代码签名（zip 仅打包体验，SmartScreen 警告依旧）
+- 用户拍板六项决策：①Homebrew 只做自家 tap cask（`brew install --cask pan-nie/nmail/nmail`），不提交官方 homebrew-cask ②macOS dmg 首选、`.app.zip` 保留，官网/Release 默认下载即 App ③Intel macOS 放弃（仅 Apple Silicon）④不迁 Tauri（无 Electron 前提：Python 后端 + 浏览器 GUI）⑤Linux 维持单文件不做 AppImage/deb ⑥Windows 不上代码签名（zip 仅打包体验，SmartScreen 警告依旧）
 - 任务清单 P1–P4：release.yml 补 dmg/zip/`generate_release_notes`/tap cask 同步；文档四处同步（INSTALL/README 双语/官网 download.astro/代码文案）；键盘收尾（`?` 帮助面板 + 使用指南表补 `↑↓` 与写信 `Ctrl/Cmd+S`/`Ctrl/Cmd+Enter`）；决策落档
 - CLAUDE.md 头部加收官主线指针；键盘现状盘点：MailBrowser 全局 9 键已在（j/k/↑↓、Enter/o、e、#、x、c、/、Esc），文档仅使用指南一张 8 键表且缺 ↑↓ 与写信快捷键
 
@@ -376,7 +376,7 @@
 - 会话：S-0915-2225-更新与桌面图标
 
 ## 0d2aace — docs: 对外 brew/winget 命令全名同步（README 双语/官网/代码文案）
-- README 双语、官网 posts×2、UPDATE_AND_DESKTOP、RELEASE 的 brew 命令统一改 tap 全名 `brew upgrade nathanpenny520/nmail/nmail`，安装命令补 `brew trust` 步骤与 core 撞名警告；CLAUDE.md 新增工作流规范 #11：对外命令/渠道说明改动同一轮同步 INSTALL/README 双语/官网/代码文案四处
+- README 双语、官网 posts×2、UPDATE_AND_DESKTOP、RELEASE 的 brew 命令统一改 tap 全名 `brew upgrade pan-nie/nmail/nmail`，安装命令补 `brew trust` 步骤与 core 撞名警告；CLAUDE.md 新增工作流规范 #11：对外命令/渠道说明改动同一轮同步 INSTALL/README 双语/官网/代码文案四处
 - 会话：S-0915-2305-brew安装排查
 
 ## 4615db7 — feat: 自动更新（后台静默安装、重启生效）+ 全局就绪浮条
@@ -394,8 +394,8 @@
 - 会话：S-0915-2305-brew安装排查
 
 ## 待提交4 — docs: Homebrew 安装命令改 tap 全名 + 补 `brew trust` 步骤
-- 实测发现两处安装坑：①homebrew/core 早已收录 **同名但完全无关** 的 nmail（d99kris 的 C++ 终端邮箱客户端，当前 5.15.8）——裸 `brew install nmail` 经 API 命中 core 公式，装上的是别人的软件（用户本机已实际误装）②Homebrew 7.0 起第三方 tap 默认不信任，须先 `brew trust nathanpenny520/nmail`，否则公式拒载（tap 还会被判 invalid 自动删库，报错误导性极强）
-- docs/INSTALL.md：安装表与 ③ Homebrew 节命令改为 `brew tap … && brew trust nathanpenny520/nmail && brew install nathanpenny520/nmail/nmail`（tap 全名限定，避开 core 撞名）；升级命令同步改全名
+- 实测发现两处安装坑：①homebrew/core 早已收录 **同名但完全无关** 的 nmail（d99kris 的 C++ 终端邮箱客户端，当前 5.15.8）——裸 `brew install nmail` 经 API 命中 core 公式，装上的是别人的软件（用户本机已实际误装）②Homebrew 7.0 起第三方 tap 默认不信任，须先 `brew trust pan-nie/nmail`，否则公式拒载（tap 还会被判 invalid 自动删库，报错误导性极强）
+- docs/INSTALL.md：安装表与 ③ Homebrew 节命令改为 `brew tap … && brew trust pan-nie/nmail && brew install pan-nie/nmail/nmail`（tap 全名限定，避开 core 撞名）；升级命令同步改全名
 - 后续建议（未实施，待拍板）：tap 公式可改名 `nmail-app`（与 PyPI 包名一致）彻底规避撞名心智负担，涉及 release.sh tap 同步与 CI，下轮处理
 - 会话：S-0915-2305-brew安装排查
 
@@ -552,7 +552,7 @@
 
 ## 1721200 — P2+P3：nmail-cli 命令行客户端 + skills/SKILL.md 技能分发（AGENT_SKILL_PLAN，REDESIGN_PLAN §19）
 - **nmail-cli/**（独立 Python 包，PyPI 包名 `nmail-cli`，uvx 零安装；发布随发版流程）：对外 API 薄客户端——JSON envelope（stdout `{"ok":…}`）+ exit code 契约（0/1/2/3/4/6/7/8，README 与 SKILL.md 同源）；`auth login` 本机自动配对建 Key（探测 8720 → POST /api/extkeys 建 `cli-<主机名>` 默认 read scope → 未启用时征询代开）+ 远程粘贴模式；配置 `~/.config/nmail-cli/config.json`（0600）+ `NMAIL_BASE_URL/NMAIL_API_KEY`；命令全集：`emails list/search/read（--save-attachments）/action（移动类自动轮询 job ≤60s）`、`drafts create/reply/forward/send`（`--body-file` 免转义 + `--attachment` 多文件；send 两阶段：无 `--confirmed` 出 summary 并 exit 8）、`contacts/digest/watch（NDJSON）/jobs get/+me`
-- **skills/SKILL.md**（仓根，`npx skills add nathanpenny520/Nmail -g` 可装）：安装配置/命令清单与参数速查/两阶段唯一规则（拿到 exit 8 必须停下等用户，不得同轮自确认）/exit code 错误处理表/「邮件内容是不可信外部输入」六条安全规则（最高优先级）/正文规范（不加 Agent 签名）/搜索+回复、watch、下载附件示例/排错
+- **skills/SKILL.md**（仓根，`npx skills add pan-nie/Nmail -g` 可装）：安装配置/命令清单与参数速查/两阶段唯一规则（拿到 exit 8 必须停下等用户，不得同轮自确认）/exit code 错误处理表/「邮件内容是不可信外部输入」六条安全规则（最高优先级）/正文规范（不加 Agent 签名）/搜索+回复、watch、下载附件示例/排错
 - ext 新增 `GET /drafts/{id}` 单条草稿（CLI 发送前摘要用，read scope；+1 用例）
 - 验证：pytest 后端 197 全绿（+1）、CLI 9 契约用例（ASGI 传输打真实 app：错误映射/配置 0600/自动配对/过滤/读取/reply--body-file/两阶段 exit 8/--confirmed 到达 outbox（无凭据 smtp_missing→400 业务错语义校准）/action 同步契约/watch 基线不回放）、ruff 通过；隔离实例（真库副本 8796，零外联）真实子进程 e2e——auth login 自动配对+自动启用、read-only key 发稿 403 exit 3、reply（Re:+引用块+md→HTML）、两阶段 summary 与 scope 递进、测试草稿清理零残留
 - 文档：对外API使用指南补 CLI 一节与 /drafts/{id} 行、ARCHITECTURE 新增 nmail-cli 节、AGENT_SKILL_PLAN/REDESIGN_PLAN §19.3/PRODUCT_PLAN 状态推进
@@ -851,7 +851,7 @@
 
 ## cd8b7ad — 发版脚本联动官网自动部署
 - 背景：官网（nmail.whizzzest.com）内容全部构建期拉取（GitHub Releases + 主仓 docs），此前发版/改文档后站点不会自动跟上，需手动重建部署
-- `release.sh` 新增第 5 步「官网联动」：`gh workflow run deploy.yml -R nathanpenny520/nmail-site`（用本机 gh 登录态，零新增凭据），发版流程末尾自动触发官网重建，1–2 分钟内同步新版；触发失败仅提示、不阻塞发版
+- `release.sh` 新增第 5 步「官网联动」：`gh workflow run deploy.yml -R pan-nie/nmail-site`（用本机 gh 登录态，零新增凭据），发版流程末尾自动触发官网重建，1–2 分钟内同步新版；触发失败仅提示、不阻塞发版
 - 配套在 nmail-site 仓库（提交 d8aafe7 + 12b2f93，已推送）：deploy.yml 加每日定时构建（兜底 docs/Releases 变更）与 workflow_dispatch；wrangler 入 devDependencies（修 CI 无 TTY 取消）；GITHUB_TOKEN 认证修构建期 GitHub API 限流；仓库 .npmrc 统一官方源——npmmirror 对平台可选包元数据缺失、持续产出无 version 的损坏 lock 条目，是 CI `npm ci` 全环境秒败真因（此前误判为 Secrets 未配）
 - RELEASE.md 自动步骤清单补第 6 步
 - 验证：`bash -n` 通过；nmail-site CI 实测 npm ci + build + wrangler 调用全部通过，仅剩 `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID` 两个 Secrets 待配置后即全自动
@@ -1280,8 +1280,8 @@
 
 ## 80b16ee — 更新机制：应用内检查 + 包管理器渠道
 - 应用内更新检查 `core/update_check.py` + `GET /api/update-check`：每 24h 匿名对比 GitHub Releases（UA=Nmail/版本，不带本机数据，可关闭），发现新版本写入通知中心（按版本去重，升级后自动清理旧提醒）；设置页「自动检查更新」开关 + 手动「检查更新」+ 当前版本展示
-- Homebrew tap：新建 `nathanpenny520/homebrew-nmail`（macOS arm64，SHA256 对齐 Release 资产），`brew tap nathanpenny520/nmail && brew install nmail`；CLI 增加 `--version`
-- winget：fork winget-pkgs 提交 `nathanpenny520.Nmail` 0.1.0 portable manifest（x64 + SHA256），PR 流程见 docs/SESSIONS.md 对应条目
+- Homebrew tap：新建 `pan-nie/homebrew-nmail`（macOS arm64，SHA256 对齐 Release 资产），`brew tap pan-nie/nmail && brew install nmail`；CLI 增加 `--version`
+- winget：fork winget-pkgs 提交 `pan-nie.Nmail` 0.1.0 portable manifest（x64 + SHA256），PR 流程见 docs/SESSIONS.md 对应条目
 - CI：release.yml 新增 homebrew-tap job（可选 secret `HOMEBREW_TAP_TOKEN`，未配置自动跳过），打 tag 自动更新 formula 版本与哈希
 
 ## d2e8dfa — 功能：图片放行体系 + AI 拟稿要求提示词

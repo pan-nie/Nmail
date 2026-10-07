@@ -67,12 +67,12 @@ info "已推送 ${TAG}，release CI 已触发"
 
 # ── 3. 盯 CI（PyPI + 三平台二进制 + Homebrew tap 同步）──
 sleep 15
-RUN_ID=$(gh run list --repo nathanpenny520/Nmail --workflow=release.yml --limit 10 \
+RUN_ID=$(gh run list --repo pan-nie/Nmail --workflow=release.yml --limit 10 \
   --json databaseId,headBranch --jq ".[] | select(.headBranch == \"$TAG\") | .databaseId" | head -1)
-[ -n "$RUN_ID" ] || die "找不到 $TAG 的 release run，请到 https://github.com/nathanpenny520/Nmail/actions 手查"
-info "CI run: https://github.com/nathanpenny520/Nmail/actions/runs/${RUN_ID}（约 5–15 分钟）"
-if ! gh run watch "$RUN_ID" --repo nathanpenny520/Nmail --exit-status --interval 30 > /dev/null; then
-  die "CI 失败。看日志: gh run view $RUN_ID --repo nathanpenny520/Nmail --log-failed"
+[ -n "$RUN_ID" ] || die "找不到 $TAG 的 release run，请到 https://github.com/pan-nie/Nmail/actions 手查"
+info "CI run: https://github.com/pan-nie/Nmail/actions/runs/${RUN_ID}（约 5–15 分钟）"
+if ! gh run watch "$RUN_ID" --repo pan-nie/Nmail --exit-status --interval 30 > /dev/null; then
+  die "CI 失败。看日志: gh run view $RUN_ID --repo pan-nie/Nmail --log-failed"
 fi
 info "CI 全绿：PyPI 已发布、Release 已挂三平台二进制、Homebrew tap 已同步"
 
@@ -81,7 +81,7 @@ if [ "$SKIP_WINGET" = 0 ]; then
   info "等待 Release 资产出现并取 Windows exe 的 SHA256…"
   SHA256=""
   for _ in $(seq 1 30); do
-    SHA256=$(gh api "repos/nathanpenny520/Nmail/releases/tags/$TAG" \
+    SHA256=$(gh api "repos/pan-nie/Nmail/releases/tags/$TAG" \
       --jq '.assets[] | select(.name == "nmail-windows-x64.exe") | .digest // "none"' 2>/dev/null || true)
     if [ -n "$SHA256" ] && [ "$SHA256" != "none" ]; then break; fi
     sleep 20
@@ -89,7 +89,7 @@ if [ "$SKIP_WINGET" = 0 ]; then
   [ -n "$SHA256" ] && [ "$SHA256" != "none" ] || die "拿不到 exe SHA256。手动按 docs/RELEASE.md『故障处理』提 winget PR"
   SHA256="${SHA256#sha256:}"
 
-  FORK="nathanpenny520/winget-pkgs"
+  FORK="pan-nie/winget-pkgs"
   BRANCH="nmail-$VERSION"
   # 同步 fork 的 master（winget-pkgs 默认分支是 master，不是 main！）
   gh api "repos/$FORK/merge-upstream" -f branch=master >/dev/null 2>&1 || info "（fork master 同步跳过，沿用现有）"
@@ -101,22 +101,22 @@ if [ "$SKIP_WINGET" = 0 ]; then
   TMP_MANIFEST="/tmp/nmail-winget-$VERSION"
   rm -rf "$TMP_MANIFEST"
   mkdir -p "$TMP_MANIFEST"
-  # 路径规则：单层首字母折叠 manifests/n/nathanpenny520/...（不能写成 n/na 两层！）
-  DEST="manifests/n/nathanpenny520/Nmail/$VERSION"
-  cat > "$TMP_MANIFEST/nathanpenny520.Nmail.yaml" <<EOF
-PackageIdentifier: nathanpenny520.Nmail
+  # 路径规则：单层首字母折叠 manifests/n/pan-nie/...（不能写成 n/na 两层！）
+  DEST="manifests/n/pan-nie/Nmail/$VERSION"
+  cat > "$TMP_MANIFEST/pan-nie.Nmail.yaml" <<EOF
+PackageIdentifier: pan-nie.Nmail
 PackageVersion: $VERSION
 DefaultLocale: en-US
 ManifestType: version
 ManifestVersion: 1.6.0
 EOF
-  cat > "$TMP_MANIFEST/nathanpenny520.Nmail.installer.yaml" <<EOF
-PackageIdentifier: nathanpenny520.Nmail
+  cat > "$TMP_MANIFEST/pan-nie.Nmail.installer.yaml" <<EOF
+PackageIdentifier: pan-nie.Nmail
 PackageVersion: $VERSION
 Installers:
   - Architecture: x64
     InstallerType: portable
-    InstallerUrl: https://github.com/nathanpenny520/Nmail/releases/download/$TAG/nmail-windows-x64.exe
+    InstallerUrl: https://github.com/pan-nie/Nmail/releases/download/$TAG/nmail-windows-x64.exe
     InstallerSha256: $SHA256
     Commands:
       - nmail
@@ -124,18 +124,18 @@ ManifestType: installer
 ManifestVersion: 1.6.0
 EOF
   # locale 文件名必须带语言后缀 .locale.en-US.yaml（不能省略！）
-  cat > "$TMP_MANIFEST/nathanpenny520.Nmail.locale.en-US.yaml" <<EOF
-PackageIdentifier: nathanpenny520.Nmail
+  cat > "$TMP_MANIFEST/pan-nie.Nmail.locale.en-US.yaml" <<EOF
+PackageIdentifier: pan-nie.Nmail
 PackageVersion: $VERSION
 PackageLocale: en-US
-Publisher: nathanpenny520
-PublisherUrl: https://github.com/nathanpenny520
-Author: nathanpenny520
+Publisher: pan-nie
+PublisherUrl: https://github.com/pan-nie
+Author: pan-nie
 PackageName: Nmail
-PackageUrl: https://github.com/nathanpenny520/Nmail
+PackageUrl: https://github.com/pan-nie/Nmail
 License: MIT
-LicenseUrl: https://github.com/nathanpenny520/Nmail/blob/$TAG/LICENSE
-Copyright: Copyright (c) 2026 nathanpenny520
+LicenseUrl: https://github.com/pan-nie/Nmail/blob/$TAG/LICENSE
+Copyright: Copyright (c) 2026 pan-nie
 ShortDescription: AI-driven, local-first aggregated email client
 Description: |-
   Nmail is a local-first AI-powered email client that aggregates multiple IMAP/SMTP accounts.
@@ -153,23 +153,23 @@ ManifestType: defaultLocale
 ManifestVersion: 1.6.0
 EOF
 
-  for f in nathanpenny520.Nmail.yaml nathanpenny520.Nmail.installer.yaml nathanpenny520.Nmail.locale.en-US.yaml; do
+  for f in pan-nie.Nmail.yaml pan-nie.Nmail.installer.yaml pan-nie.Nmail.locale.en-US.yaml; do
     # GNU base64 用 -w0、BSD（macOS）没有该参数——统一去掉换行符，两边通吃
     C=$(base64 < "$TMP_MANIFEST/$f" | tr -d '\n')
     gh api -X PUT "repos/$FORK/contents/$DEST/$f" \
-      -f message="nathanpenny520.Nmail version $VERSION" \
+      -f message="pan-nie.Nmail version $VERSION" \
       -f content="$C" -f branch="$BRANCH" --jq '.content.path' > /dev/null
   done
   info "manifest 已推到 fork 分支 ${BRANCH}（本地复验: winget validate \"$(cygpath -w "$TMP_MANIFEST" 2>/dev/null || echo "$TMP_MANIFEST")\"）"
 
   PR_URL=$(gh api "repos/microsoft/winget-pkgs/pulls" \
-    -f title="New version: nathanpenny520.Nmail version $VERSION" \
-    -f head="nathanpenny520:$BRANCH" -f base="master" \
-    -f body="New version: nathanpenny520.Nmail version $VERSION
+    -f title="New version: pan-nie.Nmail version $VERSION" \
+    -f head="pan-nie:$BRANCH" -f base="master" \
+    -f body="New version: pan-nie.Nmail version $VERSION
 
-Version update for the existing package nathanpenny520.Nmail.
+Version update for the existing package pan-nie.Nmail.
 - InstallerUrl / InstallerSha256 match the GitHub Release $TAG assets
-- Source repo: https://github.com/nathanpenny520/Nmail (MIT)" \
+- Source repo: https://github.com/pan-nie/Nmail (MIT)" \
     --jq '.html_url' 2>/dev/null || true)
   if [ -n "$PR_URL" ]; then
     info "winget PR: ${PR_URL}（校验自动跑，全绿后等社区审核员批准）"
@@ -179,10 +179,10 @@ Version update for the existing package nathanpenny520.Nmail.
 fi
 
 # ── 5. 官网联动：触发 nmail-site 重建部署（站点内容全是构建期拉取——Releases + 主仓 docs）──
-if gh workflow run deploy.yml -R nathanpenny520/nmail-site 2>/dev/null; then
+if gh workflow run deploy.yml -R pan-nie/nmail-site 2>/dev/null; then
   info "官网联动：已触发 nmail-site 部署，1-2 分钟后 nmail.whizzzest.com 同步"
 else
-  info "官网联动触发失败（gh 未登录/网络）——可手动: gh workflow run deploy.yml -R nathanpenny520/nmail-site"
+  info "官网联动触发失败（gh 未登录/网络）——可手动: gh workflow run deploy.yml -R pan-nie/nmail-site"
 fi
 
 info "✅ v$VERSION 发版流程完成"

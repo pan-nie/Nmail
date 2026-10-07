@@ -1,6 +1,6 @@
 # 常见问题 FAQ（docs/FAQ.md）
 
-按主题分类的高频问题。没找到答案？到 [GitHub Issues](https://github.com/nathanpenny520/Nmail/issues) 搜索或提问。
+按主题分类的高频问题。没找到答案？到 [GitHub Issues](https://github.com/pan-nie/Nmail/issues) 搜索或提问。
 
 ## 安装与启动
 

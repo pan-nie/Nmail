@@ -11,9 +11,9 @@
 Every account gathered into one inbox; AI sorts, archives, pre-drafts replies, and reports daily.<br>
 You read, you edit, you decide — and **not a byte of your data ever leaves your machine**.
 
-[![Release](https://img.shields.io/github/v/release/nathanpenny520/Nmail)](../../releases)
+[![Release](https://img.shields.io/github/v/release/pan-nie/Nmail)](../../releases)
 [![PyPI](https://img.shields.io/pypi/v/nmail-app)](https://pypi.org/project/nmail-app/)
-[![License](https://img.shields.io/github/license/nathanpenny520/Nmail)](LICENSE)
+[![License](https://img.shields.io/github/license/pan-nie/Nmail)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows_%7C_macOS_%7C_Linux-lightgrey)
 
 <img src="assets/Nmail-demo.gif" alt="Nmail demo: multi-account inbox, AI butler executing tasks, approvals and organizing" width="880">

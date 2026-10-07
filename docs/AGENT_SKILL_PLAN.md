@@ -88,7 +88,7 @@ nmail-cli watch                                      # 轮询 /emails/recent，N
 
 ## 5. P3：SKILL.md 与分发 ✅ 已落地（2026-09-15，`skills/SKILL.md`；本机 Claude Code 已装（GitHub HTTPS 不通，用本地路径安装）并对真实实例实测一轮；官网 /docs/agent/ 已上线（nmail-site 5aaab26，主仓 docs/Agent接入指南.md 同源同步））
 
-- **位置**：GitHub 仓根 `skills/SKILL.md`（即本仓根），`npx skills add nathanpenny520/Nmail -g` 一键安装（skills.sh 约定识别 `skills/` 目录）。
+- **位置**：GitHub 仓根 `skills/SKILL.md`（即本仓根），`npx skills add pan-nie/Nmail -g` 一键安装（skills.sh 约定识别 `skills/` 目录）。
 - **frontmatter**：`name: nmail` / `description` 含触发词（收发/搜索/整理邮件、Nmail）/ `version`。
 - **章节结构**（对齐 AgentlyMail 的骨架，文本全部自写）：
   1. 安装配置：`uvx nmail-cli` + `auth login` 两步，`+me` 验证

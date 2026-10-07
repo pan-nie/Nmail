@@ -43,7 +43,7 @@ uvx nmail-cli@latest auth login --yes        # 本机自动配对建 Key（默�
 uvx nmail-cli@latest emails search "报销" --after 2026-09-01
 ```
 
-面向 agent 的技能说明在仓库 `skills/SKILL.md`（`npx skills add nathanpenny520/Nmail -g` 可装）；
+面向 agent 的技能说明在仓库 `skills/SKILL.md`（`npx skills add pan-nie/Nmail -g` 可装）；
 CLI 自身用法见 `nmail-cli/README.md`。下文 curl 用法与 CLI 并行有效。
 
 ## 2. 端点一览

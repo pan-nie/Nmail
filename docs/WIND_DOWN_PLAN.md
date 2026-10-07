@@ -7,7 +7,7 @@
 
 | # | 决策 | 说明 |
 |---|---|---|
-| 1 | **Homebrew 只做自家 tap cask** | `brew install --cask nathanpenny520/nmail/nmail`；**不提交官方 homebrew-cask**（人工审核有知名度门槛，等有用户量再议）。brew 下载不打 quarantine 属性，装完直接开、无 Gatekeeper 警告 |
+| 1 | **Homebrew 只做自家 tap cask** | `brew install --cask pan-nie/nmail/nmail`；**不提交官方 homebrew-cask**（人工审核有知名度门槛，等有用户量再议）。brew 下载不打 quarantine 属性，装完直接开、无 Gatekeeper 警告 |
 | 2 | **macOS：dmg 首选，.app.zip 保留** | dmg 两栏拖装（Nmail.app + /Applications 软链）；官网/Release 默认下载看到的是 App（dmg） |
 | 3 | **Intel macOS 放弃** | 仅 Apple Silicon（macos-latest=arm64），文档明示 |
 | 4 | **不迁 Tauri** | 项目无 Electron 前提：Python FastAPI 后端 + 浏览器 GUI。迁移 = Rust 重写或壳+sidecar，违背收官原则 |

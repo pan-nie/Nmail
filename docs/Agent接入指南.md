@@ -9,7 +9,7 @@
 在你的 agent 环境里执行（skill 本体随主仓 `skills/SKILL.md` 分发）：
 
 ```bash
-npx skills add nathanpenny520/Nmail -g -y
+npx skills add pan-nie/Nmail -g -y
 ```
 
 装好后直接用自然语言对话即可：「帮我看看最近的未读邮件」「搜一下标题带周报的邮件」

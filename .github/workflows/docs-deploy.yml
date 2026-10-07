@@ -4,8 +4,8 @@
 # 定时兜底（09:00 UTC+8）。本 workflow 补上即时性：docs 变更 1-2 分钟内同步上线。
 #
 # 需一次性配置（未配置时本 workflow 空转跳过，不报错）：
-#   1. GitHub fine-grained PAT：仅授权 nathanpenny520/nmail-site 仓库、Actions: Read and write
-#   2. 存为主仓 secret：gh secret set SITE_DEPLOY_PAT --repo nathanpenny520/Nmail
+#   1. GitHub fine-grained PAT：仅授权 pan-nie/nmail-site 仓库、Actions: Read and write
+#   2. 存为主仓 secret：gh secret set SITE_DEPLOY_PAT --repo pan-nie/Nmail
 name: Docs deploy (dispatch nmail-site)
 
 on:
@@ -28,4 +28,4 @@ jobs:
             echo "SITE_DEPLOY_PAT 未配置，跳过触发（官网将按每日定时兜底）"
             exit 0
           fi
-          gh workflow run deploy.yml --repo nathanpenny520/nmail-site --ref main
+          gh workflow run deploy.yml --repo pan-nie/nmail-site --ref main

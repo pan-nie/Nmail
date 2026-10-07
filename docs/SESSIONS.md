@@ -210,7 +210,7 @@
 - 目标: 用户 brew 安装报错排查——连环挖出三个问题：①Homebrew 7.0 起第三方 tap 须 `brew trust`（tap 报「invalid syntax」且自动删克隆，报错误导性极强）②裸 `brew install nmail` 经 API 命中 homebrew/core **同名无关公式**（d99kris 的 C++ 终端邮箱 5.15.8），用户本机已实际误装并卸载替换 ③tap 0.4.1 二进制 `--version`/启动全部静默 exit 0
 - 排障与根因: 逐步排除法锁定 ③ 的根因——hello-world 冻结二进制正常（排除 PyInstaller/macOS 27 兼容）→ 分步导入诊断二进制正常（排除依赖）→ 唯差异为入口脚本：**cli.py 缺 `if __name__ == "__main__":` 保护**，PyInstaller 入口脚本加载完即退出，发布版 macOS/Linux 二进制从未真正运行过
 - 范围: backend(app/cli.py 一行守卫) + docs(INSTALL.md brew 命令改 tap 全名+trust 步骤, CHANGELOG, SESSIONS) + 独立仓 homebrew-nmail（README 补 trust 与全名安装）
-- 产出: 提交（哈希见 CHANGELOG 待提交3/4）——①cli.py 补 `__main__` 守卫 ②INSTALL.md 两处安装命令+升级命令改 `nathanpenny520/nmail/nmail` 全名并加 trust 与撞名说明 ③homebrew-nmail README 同步
+- 产出: 提交（哈希见 CHANGELOG 待提交3/4）——①cli.py 补 `__main__` 守卫 ②INSTALL.md 两处安装命令+升级命令改 `pan-nie/nmail/nmail` 全名并加 trust 与撞名说明 ③homebrew-nmail README 同步
 - 验证: 重打包 `--version` 输出 `Nmail 0.4.1`（formula 测试断言同口径）；ruff 通过；pytest 247 全绿；本机 tap 已信任、公式可载
 - 遗留: ①brew 渠道实际可用需下个 release（0.4.1 资产即坏，修复随 0.4.2）②tap 公式改名 `nmail-app` 彻底避撞名（涉 release.sh+CI，待用户拍板）③homebrew core 的 nmail 撞名无法绕过——文档口径已固定为全名安装 ④误装的 core nmail 及其依赖（libmagic/ncurses/xapian）本机待清（autoremove）
 - 时间: 2026-09-15 23:05 开工，23:20 完成
@@ -235,7 +235,7 @@
 - 产出: 提交（哈希见 CHANGELOG）——requestClose 对已落库草稿（含非 dirty）一律弹确认、空白未落库标签维持直接关；确认弹窗上移 Layout 常驻（原 dirty 非激活页签点 × 无反应的潜伏 bug 一并修）；恢复复用 sessionStorage 的 nmail_compose_tab_ids 映射（缺失/冲突回退新 id）；tabOrder 死键恢复完成后即剪；SKILL.md 更新检查补 uv cache prune 提议
 - 验证: npm build（字号→vitest→tsc→vite）三轮全过；真实实例 chrome 隔离页 e2e——恢复 2 条测试草稿成页签、非 dirty 点 × 出弹窗、丢弃→页签消失+草稿 55 删除、保留→页签消失+草稿 56 仍在、tabId 跨三次刷新复用不变、预置 tab_order 刷新后顺序保持、死键全清；测试数据零残留（50/51/52 用户真实草稿未动）
 - 关键决策: 挂载期两处竞态（映射先清后读、死键先剪后恢复）均为「恢复是异步的」这一事实的衍生坑，统一以「恢复前同步取映射 + restored 标记」根治；关闭再恢复的页签排末尾（浏览器语义，顺序记忆只服务开着跨刷新的页签）
-- 遗留: 8720 由本会话 uvicorn 直启（启动时原实例已停）；本机 ~/.claude/skills/nmail 副本仍为旧版，待 `npx skills add nathanpenny520/Nmail -g -y` 更新
+- 遗留: 8720 由本会话 uvicorn 直启（启动时原实例已停）；本机 ~/.claude/skills/nmail 副本仍为旧版，待 `npx skills add pan-nie/Nmail -g -y` 更新
 - 时间: 2026-09-15 21:50 开工，22:35 完成
 
 ### S-0915-2105-README精简与演示图 ✅
@@ -643,7 +643,7 @@
 - 范围: scripts/release.sh + docs(RELEASE/CHANGELOG/SESSIONS)；跨仓 nmail-site（deploy.yml 触发器、wrangler devDependencies、.npmrc、package-lock 重建、docs/DEPLOY 与 README 更新）
 - 产出: 本提交 cd8b7ad（release.sh 第 5 步官网联动 + RELEASE.md 步骤 6）；nmail-site 提交 12b2f93 已推送——CI 实测 npm ci/build/wrangler 调用全通过，仅剩 CLOUDFLARE_API_TOKEN 与 CLOUDFLARE_ACCOUNT_ID 两个 Secrets 待用户配置
 - 关键决策: 联动触发用本机 gh 登录态（零新增凭据，符合凭据边界习惯）；不做运行时拉 API（破坏纯静态+零 JS 架构）；cron 每日兜底 + 发版即时触发双层覆盖
-- 遗留: ①用户配好两个 Secrets 后 `gh workflow run deploy.yml -R nathanpenny520/nmail-site` 验证 CI 全绿、官网自动更新闭环；②schedule 在仓库 60 天无活动后会被 GitHub 停用，需重新启用；③npmmirror 是全局配置——nmail-site 已用仓库级 .npmrc 覆盖为官方源（lock 健康的前提），其他仓库若复现 lock 损坏可同样处理
+- 遗留: ①用户配好两个 Secrets 后 `gh workflow run deploy.yml -R pan-nie/nmail-site` 验证 CI 全绿、官网自动更新闭环；②schedule 在仓库 60 天无活动后会被 GitHub 停用，需重新启用；③npmmirror 是全局配置——nmail-site 已用仓库级 .npmrc 覆盖为官方源（lock 健康的前提），其他仓库若复现 lock 损坏可同样处理
 - 时间: 2026-09-12 16:40 开工，16:55 完成
 
 ### S-0912-1600-审查修复 ✅
@@ -670,7 +670,7 @@
 - 产出: 主提交 0ede5e2（见 CHANGELOG「v0.4 P7」条目）；pytest 127 全绿（+test_ext_api 13 例：health 免认证/未启用 403/坏 key 401/scope 越权 403/限流+每日上限 429/密钥重置吊销/Host 豁免边界/调用日志/agent 未配 AI 400）；ruff app 门禁通过；npm build 通过；隔离实例（8807）冒烟——curl 矩阵（生成→启用→读端点→隧道场景外部 Origin+域名 Host 200→恶意 Host ext 200/内部 403）+ 设置页 API 区截图确认
 - 关键决策: 密钥明文存 secrets.json `ext_api_key:{id}`（所见即所存）、表内 sha256 哈希认证；api_enabled 总开关默认关；/api/ext/* 豁免来源校验的安全依据=浏览器跨站带不上自定义头（预检不通）；限流/每日上限为内存软限制（重启清零，本地单机可接受）；ext 端点全薄壳转调内部实现零新邮件操作；批量移动类返回 job_id 复用既有异步机制
 - 遗留: **真实隧道场景待用户**（cloudflared/Tailscale/SSH 任一按 docs/对外API使用指南.md §3 复现外部设备调用）；agent/chat/stream 真实 AI 配置走查顺延（与 P6 遗留一并）
-- P8 同会话完成: 官网独立仓库 **nmail-site**（`../nmail-site`，已推送 `github.com/nathanpenny520/nmail-site`，public）——Astro 静态站（首页/下载/功能/更新日志/动态/404/projects.json），构建期拉 GitHub Releases（离线回退本地常量）；**已上线 <https://nmail.whizzzest.com>**（用户拍板由 Pages 迁 **Workers 静态资产**：wrangler.toml `routes.custom_domain=true` 声明域名，`wrangler deploy` 全自动建 DNS+证书；Pages 项目已删；workers.dev 兜底入口大陆网络常不可直连属预期）；排障记录：本机默认 DNS 间歇返回空导致 curl 000（1.1.1.1 稳定），非部署问题；v0.4 至此 P1–P8 全部落地
+- P8 同会话完成: 官网独立仓库 **nmail-site**（`../nmail-site`，已推送 `github.com/pan-nie/nmail-site`，public）——Astro 静态站（首页/下载/功能/更新日志/动态/404/projects.json），构建期拉 GitHub Releases（离线回退本地常量）；**已上线 <https://nmail.whizzzest.com>**（用户拍板由 Pages 迁 **Workers 静态资产**：wrangler.toml `routes.custom_domain=true` 声明域名，`wrangler deploy` 全自动建 DNS+证书；Pages 项目已删；workers.dev 兜底入口大陆网络常不可直连属预期）；排障记录：本机默认 DNS 间歇返回空导致 curl 000（1.1.1.1 稳定），非部署问题；v0.4 至此 P1–P8 全部落地
 - 时间: 2026-09-12 14:55 完成
 
 ### S-0912-1340-P6验收修复 ✅
@@ -762,7 +762,7 @@
 ### S-0912-2230-OAuth使用指南 ✅
 - 目标: 用户单日踩完全部 OAuth 坑后要求总结——写面向使用者的实操手册
 - 范围: docs/OAuth2 使用指南.md（新增）、OauthSettings.tsx（卡片补指引）、CHANGELOG；纯文档无代码变更
-- 产出: 三层配置总览 + 客户端注册步骤 + 代理策略 + 11 条真实踩坑排错表；顺带当日排障结论——Outlook「authenticated but not connected」= 各邮箱网页版 POP/IMAP 未开（非应用问题，nathanpenny520@outlook.com 正常佐证）；Gmail 10061 = 代理工具未运行
+- 产出: 三层配置总览 + 客户端注册步骤 + 代理策略 + 11 条真实踩坑排错表；顺带当日排障结论——Outlook「authenticated but not connected」= 各邮箱网页版 POP/IMAP 未开（非应用问题，pan-nie@outlook.com 正常佐证）；Gmail 10061 = 代理工具未运行
 - 时间: 2026-09-12 完成
 
 ### S-0912-HHMM-网络代理 ✅
@@ -909,8 +909,8 @@
 ### S-0911-1040-更新机制
 - 目标: 应用内更新检查 + 包管理器分发渠道（winget / Homebrew）
 - 范围: backend/app/core/update_check.py、api/system.py、api/settings.py（开关）、api/cli.py（--version）、frontend types/client/SettingsPage、release.yml、README/docs、外部仓库 homebrew-nmail 与 winget-pkgs
-- 产出: 24h 匿名更新检查（UA=Nmail/版本，不带本机数据，设置可关）+ 通知中心提醒（按版本去重、升级后自动清理）；tap 仓库 nathanpenny520/homebrew-nmail（macOS arm64 0.1.0，brew tap nathanpenny520/nmail && brew install nmail）；CI 新增 homebrew-tap 自动同步 job（可选 secret HOMEBREW_TAP_TOKEN，未配置自动跳过）；winget manifest PR 已提交：microsoft/winget-pkgs#432990（fork 默认分支为 master，首轮脚本等 main 超时的乌龙已修正）
-- 遗留: winget PR #432990 审核中，需以 nathanpenny520 身份签 Microsoft CLA；HOMEBREW_TAP_TOKEN 未配置（配好即生效）；真实账号验证 uvx/exe
+- 产出: 24h 匿名更新检查（UA=Nmail/版本，不带本机数据，设置可关）+ 通知中心提醒（按版本去重、升级后自动清理）；tap 仓库 pan-nie/homebrew-nmail（macOS arm64 0.1.0，brew tap pan-nie/nmail && brew install nmail）；CI 新增 homebrew-tap 自动同步 job（可选 secret HOMEBREW_TAP_TOKEN，未配置自动跳过）；winget manifest PR 已提交：microsoft/winget-pkgs#432990（fork 默认分支为 master，首轮脚本等 main 超时的乌龙已修正）
+- 遗留: winget PR #432990 审核中，需以 pan-nie 身份签 Microsoft CLA；HOMEBREW_TAP_TOKEN 未配置（配好即生效）；真实账号验证 uvx/exe
 - 时间: 2026-09-11 完成
 
 ### S-0911-1028-apple-touch-icon ✅
