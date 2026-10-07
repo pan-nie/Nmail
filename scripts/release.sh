@@ -101,8 +101,8 @@ if [ "$SKIP_WINGET" = 0 ]; then
   TMP_MANIFEST="/tmp/nmail-winget-$VERSION"
   rm -rf "$TMP_MANIFEST"
   mkdir -p "$TMP_MANIFEST"
-  # 路径规则：单层首字母折叠 manifests/n/pan-nie/...（不能写成 n/na 两层！）
-  DEST="manifests/n/pan-nie/Nmail/$VERSION"
+  # 路径规则：单层首字母折叠 manifests/p/pan-nie/...（不能写成 n/na 两层！）
+  DEST="manifests/p/pan-nie/Nmail/$VERSION"
   cat > "$TMP_MANIFEST/pan-nie.Nmail.yaml" <<EOF
 PackageIdentifier: pan-nie.Nmail
 PackageVersion: $VERSION

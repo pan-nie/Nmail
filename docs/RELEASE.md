@@ -68,7 +68,7 @@ winget search pan-nie.Nmail                    # ⑤ 合并后可见（PR 合并
 
 ### winget 专属坑（全部真实踩过）
 
-1. **目录必须单层首字母折叠**：`manifests/n/pan-nie/Nmail/<版本>/`——写成 `n/na/` 两层会报 "path must match PackageIdentifier"
+1. **目录必须单层首字母折叠**：`manifests/p/pan-nie/Nmail/<版本>/`——写成 `p/pa/` 两层会报 "path must match PackageIdentifier"
 2. **locale 文件名必须带语言后缀**：`pan-nie.Nmail.locale.en-US.yaml`——省略后缀会报 "filename must match ... ManifestType"
 3. **本地 `winget validate` 验不出上面两条**（它不查文件名/路径与标识符匹配），别因为本地绿就放心
 4. `winget validate <目录>` 的目录里**不能有子目录**（哪怕 `cache/`），否则报 "Subdirectory not supported"
