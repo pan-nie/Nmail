@@ -421,7 +421,7 @@ def _backfill_folder_pass(mb, account_id: int, folder: str) -> str:  # noqa: ANN
         return "done"
 
     mb.folder.set(folder)
-    older = sorted((int(u) for u in mb.uids(f"UID 1:{upper - 1}")), reverse=True)
+    older = sorted((int(u) for u in imap_client.search_uids(mb, f"UID 1:{upper - 1}")), reverse=True)
     if not older:
         _save_backfill_state(conn, account_id, folder, upper, 1)
         conn.commit()
@@ -561,7 +561,7 @@ def _sync_folder(mb, account_id: int, folder: str) -> dict:  # noqa: ANN001
         # 首同步（EXPERIENCE_PLAN B1）：拉最新一页立即可用；更早历史由回补线程
         # 从新到旧补齐。旧实现只拉最近 30 天且永不回补，大邮箱永远缺历史。
         mb.folder.set(folder)
-        newest = sorted((int(u) for u in mb.uids("ALL")), reverse=True)
+        newest = sorted((int(u) for u in imap_client.search_uids(mb, "ALL")), reverse=True)
         window, rest = newest[:25], newest[25:]
         done = 0 if rest else 1  # 文件夹总量不足一页 → 历史已齐
         backfill_uid: int | None = None
