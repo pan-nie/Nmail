@@ -191,6 +191,19 @@ def fetch_uids_parsed(mb: MailBox, window: list[int]) -> list[ParsedMessage]:
     return parsed
 
 
+def select_folder(mb: MailBox, folder: str) -> None:
+    """选中文件夹（读路径专用）：服务器拒绝可写选中时降级 EXAMINE 只读选中。
+
+    QQ 的命名空间容器节点（如「其他文件夹」父目录）SELECT 会被 imaplib 抛
+    readonly 中止（'mailbox status changed to READ-ONLY'），但 EXAMINE 可读。
+    读路径（搜索/拉取）在只读选中下完全可用；写路径（flag/移动/删除）不得走这里。
+    """
+    try:
+        mb.folder.set(folder)
+    except imaplib.IMAP4.readonly:
+        mb.folder.set(folder, readonly=True)
+
+
 def search_uids(mb: MailBox, criteria) -> list:  # noqa: ANN001 — criteria 为 imap_tools Criteria
     """UID SEARCH 封装：不带 CHARSET 参数。
 
@@ -214,7 +227,7 @@ def iter_new_mail(mb: MailBox, folder: str, last_uid: int, chunk_size: int = 25)
     注意 IMAP 语义 `UID x:*` 在 x 大于最大 UID 时也会返回最后一封，
     因此仍按 uid > last_uid 过滤一次。
     """
-    mb.folder.set(folder)
+    select_folder(mb, folder)
     pending = sorted(int(u) for u in search_uids(mb, f"UID {last_uid + 1}:*") if int(u) > last_uid)
     for start in range(0, len(pending), chunk_size):
         window = pending[start : start + chunk_size]
@@ -257,7 +270,7 @@ def search_flag_uids(mb: MailBox, folder: str) -> tuple[set[int], set[int]] | No
     跳过对账——对账尽力而为，绝不阻塞同步主干。
     """
     try:
-        mb.folder.set(folder)
+        select_folder(mb, folder)
         unread = {int(u) for u in search_uids(mb, AND(seen=False))}
         flagged = {int(u) for u in search_uids(mb, AND(flagged=True))}
         return unread, flagged

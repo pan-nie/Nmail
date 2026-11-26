@@ -38,6 +38,26 @@ def test_fetch_不带charset():
     assert sent["charset"] is None
 
 
+def test_select_folder_只读降级():
+    import imaplib as _il
+
+    from app.core import imap_client
+
+    calls = []
+
+    class FakeFolder:
+        def set(self, folder, readonly=False):
+            calls.append(readonly)
+            if not readonly:
+                raise _il.IMAP4.readonly("mailbox status changed to READ-ONLY")
+
+    class FakeMB:
+        folder = FakeFolder()
+
+    imap_client.select_folder(FakeMB(), "其他文件夹")
+    assert calls == [False, True]  # 先 SELECT，被拒后降级 EXAMINE
+
+
 def test_imaplib_已注册ID命令():
     import app.core.imap_client  # noqa: F401 — 导入即注册
 
