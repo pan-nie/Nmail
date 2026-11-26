@@ -6,9 +6,38 @@
 from __future__ import annotations
 
 import asyncio
+import mimetypes
 import threading
 from contextlib import asynccontextmanager
 from urllib.parse import urlsplit
+
+# Windows 上 mimetypes 会读注册表（HKCR\<ext>\Content Type）猜类型，
+# 而注册表可能被第三方软件污染（实测 .js 被改成 text/plain），
+# 浏览器拒绝执行 MIME 不对的 module script → 前端整页白屏。
+# 启动时对前端用到的扩展名写死标准映射：后写的 add_type 覆盖注册表读入的值，
+# strict 与非 strict 两张表都写，保证 guess_type 两条路径都命中。
+_STATIC_MIME_OVERRIDES = {
+    ".js": "text/javascript",
+    ".mjs": "text/javascript",
+    ".css": "text/css",
+    ".html": "text/html",
+    ".json": "application/json",
+    ".map": "application/json",
+    ".webmanifest": "application/manifest+json",
+    ".svg": "image/svg+xml",
+    ".png": "image/png",
+    ".ico": "image/x-icon",
+    ".webp": "image/webp",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2",
+    ".ttf": "font/ttf",
+    ".txt": "text/plain",
+    ".xml": "application/xml",
+    ".wasm": "application/wasm",
+}
+for _ext, _type in _STATIC_MIME_OVERRIDES.items():
+    mimetypes.add_type(_type, _ext, strict=True)
+    mimetypes.add_type(_type, _ext, strict=False)
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
