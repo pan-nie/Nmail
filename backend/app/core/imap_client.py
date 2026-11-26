@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import base64
 import email.utils
+import imaplib
 import logging
 import re
 import smtplib
@@ -22,6 +23,11 @@ logger = logging.getLogger(__name__)
 
 # 网易系服务器必须在选箱前收到 IMAP ID 命令，否则 SELECT 报 "Unsafe Login"
 NETEASE_HOSTS = ("163.com", "126.com", "yeah.net", "netease")
+
+# imaplib 未注册 RFC 2971 的 ID 命令，直接 _simple_command("ID", ...) 会
+# KeyError: 'ID'（被调用方吞掉后表现为 ID 从未发出，网易企业邮 UID 命令全 BAD）。
+# 模块加载期注册一次，全局生效。
+imaplib.Commands.setdefault("ID", ("NONAUTH", "AUTH", "SELECTED", "LOGOUT"))
 
 SEEN_FLAG = MailMessageFlags.SEEN
 FLAGGED_FLAG = MailMessageFlags.FLAGGED
@@ -170,7 +176,8 @@ def fetch_uids_parsed(mb: MailBox, window: list[int]) -> list[ParsedMessage]:
     lo, hi = min(window), max(window)
 
     def _fetch_one(criteria_str: str, out: list[ParsedMessage]) -> None:
-        for msg in mb.fetch(criteria_str, mark_seen=False, bulk=True):
+        # charset=None：Coremail（网易企业邮）拒绝显式 CHARSET（同 search_uids 注释）
+        for msg in mb.fetch(criteria_str, None, mark_seen=False, bulk=True):
             # 部分版本 imap-tools 返回 str 型 uid，统一转 int
             if msg.uid is None:
                 continue
@@ -182,6 +189,16 @@ def fetch_uids_parsed(mb: MailBox, window: list[int]) -> list[ParsedMessage]:
         for uid in window:
             _fetch_one(f"UID {uid}", parsed)
     return parsed
+
+
+def search_uids(mb: MailBox, criteria) -> list:  # noqa: ANN001 — criteria 为 imap_tools Criteria
+    """UID SEARCH 封装：不带 CHARSET 参数。
+
+    Coremail（网易企业邮，如 imaphz.qiye.163.com）拒绝显式 CHARSET，
+    报 `BAD Could not parse command`；imap_tools 文档亦注明此类服务器
+    应传 charset=None。本项目所有检索条件均为纯 ASCII，省略安全。
+    """
+    return mb.uids(criteria, charset=None)
 
 
 def iter_new_mail(mb: MailBox, folder: str, last_uid: int, chunk_size: int = 25):
@@ -198,7 +215,7 @@ def iter_new_mail(mb: MailBox, folder: str, last_uid: int, chunk_size: int = 25)
     因此仍按 uid > last_uid 过滤一次。
     """
     mb.folder.set(folder)
-    pending = sorted(int(u) for u in mb.uids(f"UID {last_uid + 1}:*") if int(u) > last_uid)
+    pending = sorted(int(u) for u in search_uids(mb, f"UID {last_uid + 1}:*") if int(u) > last_uid)
     for start in range(0, len(pending), chunk_size):
         window = pending[start : start + chunk_size]
         parsed = [p for p in fetch_uids_parsed(mb, window) if p.uid > last_uid]
@@ -241,8 +258,8 @@ def search_flag_uids(mb: MailBox, folder: str) -> tuple[set[int], set[int]] | No
     """
     try:
         mb.folder.set(folder)
-        unread = {int(u) for u in mb.uids(AND(seen=False))}
-        flagged = {int(u) for u in mb.uids(AND(flagged=True))}
+        unread = {int(u) for u in search_uids(mb, AND(seen=False))}
+        flagged = {int(u) for u in search_uids(mb, AND(flagged=True))}
         return unread, flagged
     except Exception:  # noqa: BLE001
         logger.debug("uid flag search failed for %s", folder)

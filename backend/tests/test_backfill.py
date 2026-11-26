@@ -41,7 +41,7 @@ class FakeMb:
         self.current: str | None = None
         self.folder = _Folder(self)
 
-    def uids(self, criteria: str) -> list[int]:
+    def uids(self, criteria: str, charset: str | None = None) -> list[int]:
         uids = sorted(self.store.get(self.current, []))
         if criteria == "ALL":
             return uids
@@ -52,7 +52,7 @@ class FakeMb:
             return [u for u in uids if u >= lo] or ([uids[-1]] if uids else [])
         return [u for u in uids if lo <= u <= int(hi)]
 
-    def fetch(self, criteria: str, mark_seen: bool = False, bulk: bool = True):
+    def fetch(self, criteria: str, charset: str | None = None, mark_seen: bool = False, bulk: bool = True):
         m = re.fullmatch(r"UID (\d+)(?::(\d+))?", criteria)
         lo, hi = int(m.group(1)), int(m.group(2) or m.group(1))
         return [SimpleNamespace(uid=u) for u in self.store.get(self.current, []) if lo <= u <= hi]
